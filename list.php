@@ -1,13 +1,5 @@
 <?php
-/*
-2  * 프로그램명 : 기초php 게시판 만들기 페이지네이션
-3  * 학교 : 영진전문대 컴퓨터정보계열 1201061 '김용범(キムヨンボム)'
-4  * 만든이 : 김용범
-5  * 2015.10.09
-6  * www.superb_lr.blog.me
-7  */
-
-include 'db_CN.php';
+    include 'db_CN.php';
     $user_id=isset($_POST['user_id'])? $_POST['user_id'] : false;
     $user_name=isset($_POST['user_name'])? $_POST['user_name'] : false;
     $subject=isset($_POST['subject'])? $_POST['subject'] : false;
@@ -56,7 +48,8 @@ include 'db_CN.php';
 //            echo (mysql_error($rscID));
 //        }
         $pagelimit=5;
-        $page_num=ceil(mysql_num_rows($rsc)/$pagelimit);
+        $total_page_num=mysql_num_rows($rsc);
+        $page_num=ceil($total_page_num/$pagelimit);
 
         $start=($getValue['page']-1)*5;
         //페이지의 레코드를 배열로
@@ -76,14 +69,23 @@ include 'db_CN.php';
 
         echo "<tr><td colspan='5'>";
 
-
+        $start_page = floor(($getValue['page']-1)/$pagelimit)*$pagelimit+1;
+        $end_page = $start_page+$pagelimit-1;
         //테스트
-        //   if($)
+        if($start_page>$pagelimit){
+            $before_num=$start_page-1;
+            echo "<a href=list.php?page={$before_num}>◀</a>";
+        }
         //테스트끝
+        for($i=$start_page;$i<=$end_page;$i++) {
+            if ($i <= $page_num) {
+              echo "<a href=list.php?page={$i}>{$i}</a>";
+            }
 
-
-        for($i=1;$i<=$page_num;$i++) {
-            echo "<a href=list.php?page={$i}>{$i}</a>";
+        }
+        if($end_page<$page_num){
+            $after_num=$end_page+1;
+            echo "<a href=list.php?page={$after_num}>▶</a>";
         }
 
         echo "</td></tr>";
@@ -100,20 +102,20 @@ include 'db_CN.php';
         <style>
             tr{ text-align: center;
                 width: 800px;
-                height: 50px;
+                height: 10px;
                 background-color: #FFFFFF;
                 align=center width=750 bgcolor='#FFFFFF' height=50
             }
         </style>
     </head>
     <body>
-    <table border="0" width=400 class=hope01 cellspacing=1 cellpadding=2 bgcolor="#666666">
+    <table border="0" width=500 class=hope01 cellspacing=1 cellpadding=2 bgcolor="#666666">
         <tr><td>번호</td><td>작성자</td><td>제목</td><td>조회수</td><td>작성일</td></tr>
         <?php
             table_make();
         ?>
         <tr>
-            <td colspan="5">
+            <td colspan="5" align="right">
                 <form action="write.php">
                     <input type="submit" value="글쓰기">
                 </form>
